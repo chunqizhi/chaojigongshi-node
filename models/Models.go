@@ -64,7 +64,7 @@ func RegisterDB() {
 	fmt.Println("db link:",dbLink)
 	fmt.Println("maxIdle:",maxIdle)
 	fmt.Println("maxConn:",maxConn)
-	dbLink = "root@tcp(myMysqlNode:3306)/etch?charset=utf8&loc=Local"
+	dbLink = "root:root@tcp(myMysqlNode:3306)/etch?charset=utf8&loc=Local"
 	maxIdle = 50
 	maxConn = 300
 	fmt.Println("db link:",dbLink)
