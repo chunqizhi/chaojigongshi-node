@@ -17,7 +17,8 @@ func startDO(client *etch.Eclient) bool {
 	if err != nil { //统计区块高度错误
 		panic(err)
 	}
-	conn, err := redis.Dial("tcp", beego.AppConfig.String("redis"), redis.DialPassword(beego.AppConfig.String("redisPass")))
+	//conn, err := redis.Dial("tcp", beego.AppConfig.String("redis"), redis.DialPassword(beego.AppConfig.String("redisPass")))
+	conn, err := redis.Dial("tcp", "myRedisNode:6379", redis.DialPassword(beego.AppConfig.String("redisPass")))
 	if err != nil {
 		panic(err)
 		return false

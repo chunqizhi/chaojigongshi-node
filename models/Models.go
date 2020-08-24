@@ -60,6 +60,16 @@ func RegisterDB() {
 	dbLink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=%v", dbUser, dbPassword, dbHost, dbPort, dbDatabase, dbCharset, loc)
 	maxIdle := beego.AppConfig.DefaultInt("maxIdle", 50)
 	maxConn := beego.AppConfig.DefaultInt("maxConn", 300)
+	fmt.Println("before:")
+	fmt.Println("db link:",dbLink)
+	fmt.Println("maxIdle:",maxIdle)
+	fmt.Println("maxConn:",maxConn)
+	dbLink = "root@tcp(myMysqlNode:3306)/etch?charset=utf8&loc=Local"
+	maxIdle = 50
+	maxConn = 300
+	fmt.Println("db link:",dbLink)
+	fmt.Println("maxIdle:",maxIdle)
+	fmt.Println("maxConn:",maxConn)
 	if err := orm.RegisterDataBase("default", "mysql", dbLink, maxIdle, maxConn); err != nil {
 		panic(err)
 	}
