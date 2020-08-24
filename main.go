@@ -46,6 +46,10 @@ func startDO(client *etch.Eclient) bool {
 	var blockSum = (blocklen / 1000) * 1000 // 判断区块内数据是否满足一千条
 	timestamp := uint64(block.Time())
 	for key, tx := range block.Transactions() {
+		receipt, err := client.GetTransactionReceipt(tx.Hash())
+		if err != nil {
+			panic(err)
+		}
 		chainID, err := client.NetworkID(context.Background())
 		if err != nil {
 			panic(err)
@@ -57,7 +61,7 @@ func startDO(client *etch.Eclient) bool {
 		}
 		from = msg.From().Hex() // 获取from地址
 		insert := new(models.Order)
-		insert.Status = "0x1"
+		insert.Status = receipt.Status
 		insert.Hash = tx.Hash().Hex()
 		insert.Value = tx.Value().String()
 		insert.Gas = tx.Gas()

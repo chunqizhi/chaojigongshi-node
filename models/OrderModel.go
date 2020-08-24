@@ -20,7 +20,7 @@ type Order struct {
 	Data        string `orm:""`
 	To          string `orm:""`
 	Timestamp   uint64 `orm:""`
-	Status      string `orm:""`
+	Status      uint64 `orm:""`
 }
 
 func NewOrder() *Order {
