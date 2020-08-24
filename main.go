@@ -112,7 +112,7 @@ func start(this *etch.Eclient) {
 	}
 }
 func main() {
-	client, err := etch.New("http://127.0.0.1:8545") // 只在开始时候开启一次链接，
+	client, err := etch.New("http://myEthNode:8545") // 只在开始时候开启一次链接，
 	if err != nil {                                      //捕获到异常，可能是端口耗尽，休眠一段实践进行重试
 		fmt.Println("休眠30秒后重启主进程")
 		time.Sleep(30 * time.Second) // tcp端口默认失效时间最低30秒
