@@ -114,11 +114,11 @@ func main() {
 		time.Sleep(30 * time.Second) // tcp端口默认失效时间最低30秒
 		main()
 	}
-	start(client)
-	func() {
+	defer func() {
 		if r := recover(); r != nil { // 捕获到异常
 			client.Close() // 关闭链接
 			main()         //重启主方法
 		}
 	}()
+	start(client)
 }
