@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"eth/etch"
-	"eth/models"
 	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/chunqizhi/chaojigongshi-node/etch"
+	"github.com/chunqizhi/chaojigongshi-node/models"
+	"github.com/chunqizhi/go-ethereum/core/types"
 	"github.com/garyburd/redigo/redis"
 	"os"
 	"time"
@@ -17,8 +17,7 @@ func startDO(client *etch.Eclient) bool {
 	if err != nil { //统计区块高度错误
 		panic(err)
 	}
-	//conn, err := redis.Dial("tcp", beego.AppConfig.String("redis"), redis.DialPassword(beego.AppConfig.String("redisPass")))
-	conn, err := redis.Dial("tcp", "myRedisNode:6379", redis.DialPassword(beego.AppConfig.String("redisPass")))
+	conn, err := redis.Dial("tcp", beego.AppConfig.String("redis"), redis.DialPassword(beego.AppConfig.String("redisPass")))
 	if err != nil {
 		panic(err)
 		return false
@@ -26,6 +25,9 @@ func startDO(client *etch.Eclient) bool {
 	num, err := redis.Int64(conn.Do("GET", "ethnum")) // 获取key
 	if err != nil {                                   //没有这个key
 		conn.Do("set", "ethnum", "0")
+	}
+	if num == 0 {
+		num = 1
 	}
 	if num > count {
 		conn.Close()
@@ -60,7 +62,7 @@ func startDO(client *etch.Eclient) bool {
 		if err != nil {
 			panic(err)
 		}
-		from = msg.From().Hex() // 获取from地址
+		from = msg.From().String() // 获取from地址
 		insert := new(models.Order)
 		insert.Status = receipt.Status
 		insert.Hash = tx.Hash().Hex()
@@ -71,7 +73,7 @@ func startDO(client *etch.Eclient) bool {
 		insert.GasPrice = tx.GasPrice().Uint64()
 		insert.Nonce = tx.Nonce()
 		insert.Data = string(tx.Data()[:])
-		insert.To = tx.To().Hex()
+		insert.To = tx.To()
 		insert.Timestamp = timestamp
 		if key+1%1000 == 0 {
 			addSta := models.NewOrder().InsertAll(orderPl)
@@ -113,8 +115,8 @@ func start(this *etch.Eclient) {
 	}
 }
 func main() {
-	client, err := etch.New("http://myEthNode:8545") // 只在开始时候开启一次链接，
-	if err != nil {                                      //捕获到异常，可能是端口耗尽，休眠一段实践进行重试
+	client, err := etch.New(beego.AppConfig.String("ethNode")) // 只在开始时候开启一次链接，
+	if err != nil {                                            //捕获到异常，可能是端口耗尽，休眠一段实践进行重试
 		fmt.Println("休眠30秒后重启主进程")
 		time.Sleep(30 * time.Second) // tcp端口默认失效时间最低30秒
 		main()
