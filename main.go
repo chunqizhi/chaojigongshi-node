@@ -72,7 +72,7 @@ func startDO(client *etch.Eclient) bool {
 		insert.BlockNumber = num
 		insert.GasPrice = tx.GasPrice().Uint64()
 		insert.Nonce = tx.Nonce()
-		insert.Data = string(tx.Data()[:])
+		//insert.Data = string(tx.Data()[:])
 		insert.To = tx.To()
 		insert.Timestamp = timestamp
 		if key+1%1000 == 0 {
