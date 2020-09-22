@@ -1,9 +1,9 @@
 package etch
 
 import (
-	"github.com/chunqizhi/go-ethereum/common"
-	"github.com/chunqizhi/go-ethereum/core/types"
-	"github.com/chunqizhi/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"golang.org/x/net/context"
 	"math/big"
 )

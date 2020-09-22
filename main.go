@@ -6,7 +6,8 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/chunqizhi/chaojigongshi-node/etch"
 	"github.com/chunqizhi/chaojigongshi-node/models"
-	"github.com/chunqizhi/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/garyburd/redigo/redis"
 	"os"
 	"time"
@@ -15,10 +16,12 @@ import (
 func startDO(client *etch.Eclient) bool {
 	count, err := client.Count()
 	if err != nil { //统计区块高度错误
+		fmt.Println("client.Count(): ",err.Error())
 		panic(err)
 	}
 	conn, err := redis.Dial("tcp", beego.AppConfig.String("redis"), redis.DialPassword(beego.AppConfig.String("redisPass")))
 	if err != nil {
+		fmt.Println("redis.Dial(): ",err.Error())
 		panic(err)
 		return false
 	}
@@ -30,11 +33,14 @@ func startDO(client *etch.Eclient) bool {
 		num = 1
 	}
 	if num > count {
+		fmt.Printf("num = %d, count = %d\n ",num,count)
 		conn.Close()
 		return false
 	}
 	block, err := client.Block(num)
 	if err != nil { //查询区块详情错误
+		fmt.Println("client.Block(): ",err.Error())
+		fmt.Println("num = ",num)
 		panic(err)
 	}
 	blocklen := len(block.Transactions())
@@ -51,15 +57,22 @@ func startDO(client *etch.Eclient) bool {
 	for key, tx := range block.Transactions() {
 		receipt, err := client.GetTransactionReceipt(tx.Hash())
 		if err != nil {
+			fmt.Println("client.GetTransactionReceipt(): ",err.Error())
+			if err == ethereum.NotFound {
+				fmt.Printf("tx hash = %s\n",tx.Hash().String())
+				continue
+			}
 			panic(err)
 		}
 		chainID, err := client.NetworkID(context.Background())
 		if err != nil {
+			fmt.Println("client.NetworkID(): ",err.Error())
 			panic(err)
 		}
 		from := ""
 		msg, err := tx.AsMessage(types.NewEIP155Signer(chainID))
 		if err != nil {
+			fmt.Println("tx.AsMessage(): ",err.Error())
 			panic(err)
 		}
 		from = msg.From().String() // 获取from地址
@@ -72,8 +85,10 @@ func startDO(client *etch.Eclient) bool {
 		insert.BlockNumber = num
 		insert.GasPrice = tx.GasPrice().Uint64()
 		insert.Nonce = tx.Nonce()
-		//insert.Data = string(tx.Data()[:])
-		insert.To = tx.To()
+		//insert.Data = tx.Data()
+		if tx.To() != nil {
+			insert.To = tx.To().String()
+		}
 		insert.Timestamp = timestamp
 		if key+1%1000 == 0 {
 			addSta := models.NewOrder().InsertAll(orderPl)
