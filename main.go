@@ -6,19 +6,23 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/chunqizhi/chaojigongshi-node/etch"
 	"github.com/chunqizhi/chaojigongshi-node/models"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/core/types"
+	ethereum "github.com/futuredigitalgames/go-FutureDigitalGames"
+	"github.com/futuredigitalgames/go-FutureDigitalGames/core/types"
 	"github.com/garyburd/redigo/redis"
 	"os"
 	"time"
 )
 
 func startDO(client *etch.Eclient) bool {
-	count, err := client.Count()
-	if err != nil { //统计区块高度错误
-		fmt.Println("client.Count(): ",err.Error())
-		panic(err)
-	}
+	fmt.Println("lalalalala2")
+
+	count := C.GetBlockNumber()
+	//count, err := client.Count()
+	//if err != nil { //统计区块高度错误
+	//	fmt.Println("client.Count(): ",err.Error())
+	//	panic(err)
+	//}
+	fmt.Println("count=",count)
 	conn, err := redis.Dial("tcp", beego.AppConfig.String("redis"), redis.DialPassword(beego.AppConfig.String("redisPass")))
 	if err != nil {
 		fmt.Println("redis.Dial(): ",err.Error())
@@ -32,17 +36,21 @@ func startDO(client *etch.Eclient) bool {
 	if num == 0 {
 		num = 1
 	}
-	if num > count {
+	if num > int64(count) {
 		fmt.Printf("num = %d, count = %d\n ",num,count)
 		conn.Close()
 		return false
 	}
-	block, err := client.Block(num)
-	if err != nil { //查询区块详情错误
-		fmt.Println("client.Block(): ",err.Error())
-		fmt.Println("num = ",num)
-		panic(err)
-	}
+	block1 := C.GetBlockByNumber(int(num))
+	//block, err := client.Block(num)
+	//if err != nil { //查询区块详情错误
+	//	fmt.Println("client.Block(): ",err.Error())
+	//	fmt.Println("num = ",num)
+	//	panic(err)
+	//}
+	fmt.Printf("block=%#v\n",block1)
+	return true
+	block := &types.Block{}
 	blocklen := len(block.Transactions())
 	if blocklen <= 0 {
 		fmt.Println("区块：", num, "没有交易数据")
@@ -119,6 +127,7 @@ func startDO(client *etch.Eclient) bool {
 
 // 自旋方法
 func start(this *etch.Eclient) {
+	fmt.Println("lalalalala2")
 	status := startDO(this)
 	if status {
 		time.Sleep(5 * time.Millisecond)
@@ -129,7 +138,15 @@ func start(this *etch.Eclient) {
 		start(this)
 	}
 }
+
+var C *etch.Chao
+
+func init() {
+	C = &etch.Chao{}
+}
+
 func main() {
+	fmt.Println("lalalalala")
 	client, err := etch.New(beego.AppConfig.String("ethNode")) // 只在开始时候开启一次链接，
 	if err != nil {                                            //捕获到异常，可能是端口耗尽，休眠一段实践进行重试
 		fmt.Println("休眠30秒后重启主进程")

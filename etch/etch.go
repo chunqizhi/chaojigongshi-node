@@ -1,9 +1,9 @@
 package etch
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/futuredigitalgames/go-FutureDigitalGames/common"
+	"github.com/futuredigitalgames/go-FutureDigitalGames/core/types"
+	"github.com/futuredigitalgames/go-FutureDigitalGames/ethclient"
 	"golang.org/x/net/context"
 	"math/big"
 )
