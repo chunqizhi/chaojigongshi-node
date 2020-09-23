@@ -6,8 +6,8 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/chunqizhi/chaojigongshi-node/etch"
 	"github.com/chunqizhi/chaojigongshi-node/models"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/chunqizhi/go-ethereum"
+	"github.com/chunqizhi/go-ethereum/core/types"
 	"github.com/garyburd/redigo/redis"
 	"os"
 	"time"
@@ -55,7 +55,7 @@ func startDO(client *etch.Eclient) bool {
 	var blockSum = (blocklen / 1000) * 1000 // 判断区块内数据是否满足一千条
 	timestamp := uint64(block.Time())
 	for key, tx := range block.Transactions() {
-		receipt, err := client.GetTransactionReceipt(tx.Hash())
+		receipt, err := client.GetTransactionReceipt(tx.Hash().Hex())
 		if err != nil {
 			fmt.Println("client.GetTransactionReceipt(): ",err.Error())
 			if err == ethereum.NotFound {

@@ -1,9 +1,8 @@
 package etch
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/chunqizhi/go-ethereum/core/types"
+	"github.com/chunqizhi/go-ethereum/ethclient"
 	"golang.org/x/net/context"
 	"math/big"
 )
@@ -38,6 +37,6 @@ func (this Eclient) Block(number int64) (*types.Block, error) {
 	return block, nil
 }
 
-func (this Eclient) GetTransactionReceipt(hash common.Hash) (*types.Receipt, error) {
+func (this Eclient) GetTransactionReceipt(hash string) (*types.Receipt, error) {
 	return this.TransactionReceipt(context.Background(), hash)
 }
